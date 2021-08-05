@@ -139,17 +139,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
-extern uint8_t rx_buffer[20];
-//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-//{
-//  /* Prevent unused argument(s) compilation warning */
-//
-//  /* NOTE : This function should not be modified, when the callback is needed,
-//            the HAL_UART_RxCpltCallback can be implemented in the user file
-//   */
-//      HAL_UART_Transmit(&huart2, (uint8_t *)rx_buffer, 1,0xFFFF);
-//      HAL_UART_Receive_IT(&huart2, (uint8_t *)rx_buffer, 1);
-//}
+
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

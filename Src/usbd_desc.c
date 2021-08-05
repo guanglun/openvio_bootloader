@@ -66,8 +66,8 @@
 #define USBD_VID     					          2012
 #define USBD_LANGID_STRING     			    1033
 #define USBD_MANUFACTURER_STRING     	  "OPENVIO_MANUFACTURER"
-#define USBD_PID_HS     				        2012
-#define USBD_PRODUCT_STRING_HS     		  "OPENVIO"
+#define USBD_PID_HS     				        2013
+#define USBD_PRODUCT_STRING_HS     		  "OPENVIO Bootloader"
 #define USBD_CONFIGURATION_STRING_HS    "OPENVIO Config"
 #define USBD_INTERFACE_STRING_HS     	  "OPENVIO Interface"
 

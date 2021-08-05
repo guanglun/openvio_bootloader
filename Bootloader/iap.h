@@ -5,7 +5,7 @@
 #include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
-
+#include "stdio.h"
 #include "config.h"
 
 void boot(void);

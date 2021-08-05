@@ -71,12 +71,6 @@ int main(void)
 
   /* USER CODE END 1 */
 
-  /* Enable I-Cache---------------------------------------------------------*/
-  SCB_EnableICache();
-
-  /* Enable D-Cache---------------------------------------------------------*/
-  SCB_EnableDCache();
-
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
@@ -90,7 +84,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  __HAL_RCC_DMA2_CLK_ENABLE();//must enable dma2,for dcmi work well.
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -99,7 +93,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  printf("===>>> openvio bootloader\r\n");
+  printf("[ openvio bootloader ]\r\n");
 
   boot();
   /* USER CODE END 2 */
@@ -181,27 +175,6 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
-
- /**
-  * @brief  Period elapsed callback in non blocking mode
-  * @note   This function is called  when TIM7 interrupt took place, inside
-  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
-  * a global variable "uwTick" used as application time base.
-  * @param  htim : TIM handle
-  * @retval None
-  */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  /* USER CODE BEGIN Callback 0 */
-
-  /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM7) {
-    HAL_IncTick();
-  }
-  /* USER CODE BEGIN Callback 1 */
-
-  /* USER CODE END Callback 1 */
-}
 
 /**
   * @brief  This function is executed in case of error occurrence.
