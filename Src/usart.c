@@ -21,6 +21,10 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
+#include "main.h"
+uint16_t rx_len = 0;
+uint8_t rx_buffer[1024]={0};
+
 #include "stdio.h"
 
 #if 0
@@ -139,7 +143,101 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+/**
+ * @brief   Receives data from UART.
+ * @param   *data: Array to save the received data.
+ * @param   length:  Size of the data.
+ * @return  status: Report about the success of the receiving.
+ */
+uart_status uart_receive(uint8_t *data, uint16_t length)
+{
+  uart_status status = UART_ERROR;
 
+  if (HAL_OK == HAL_UART_Receive(&huart2, data, length, UART_TIMEOUT))
+  {
+    status = UART_OK;
+  }
+
+  return status;
+}
+
+/**
+ * @brief   Transmits a string to UART.
+ * @param   *data: Array of the data.
+ * @return  status: Report about the success of the transmission.
+ */
+uart_status uart_transmit_str(uint8_t *data)
+{
+  uart_status status = UART_ERROR;
+  uint16_t length = 0u;
+
+  /* Calculate the length. */
+  while ('\0' != data[length])
+  {
+    length++;
+  }
+
+  if (HAL_OK == HAL_UART_Transmit(&huart2, data, length, UART_TIMEOUT))
+  {
+    status = UART_OK;
+  }
+
+  return status;
+}
+
+/**
+ * @brief   Transmits a single char to UART.
+ * @param   *data: The char.
+ * @return  status: Report about the success of the transmission.
+ */
+uart_status uart_transmit_ch(uint8_t data)
+{
+  uart_status status = UART_ERROR;
+
+  /* Make available the UART module. */
+  if (HAL_UART_STATE_TIMEOUT == HAL_UART_GetState(&huart2))
+  {
+    HAL_UART_Abort(&huart2);
+  }
+
+  if (HAL_OK == HAL_UART_Transmit(&huart2, &data, 1u, UART_TIMEOUT))
+  {
+    status = UART_OK;
+  }
+  return status;
+}
+
+uart_status uart_transmit_buffer(uint8_t *data,uint16_t length)
+{
+  uart_status status = UART_ERROR;
+
+  if (HAL_OK == HAL_UART_Transmit(&huart2, data, length, UART_TIMEOUT))
+  {
+    status = UART_OK;
+  }
+
+  return status;
+}
+void uart_recv_start(void)
+{
+  __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE); 
+	HAL_UART_Receive_DMA(&huart2,rx_buffer,1024);
+}
+
+void UsartReceive_IDLE(UART_HandleTypeDef *huart)
+{
+	if((__HAL_UART_GET_FLAG(huart,UART_FLAG_IDLE) != RESET))
+	{ 		
+		HAL_UART_DMAStop(huart);
+		__HAL_UART_CLEAR_IDLEFLAG(huart);
+		if(huart->Instance == huart2.Instance)
+		{			
+			rx_len =  1024 - __HAL_DMA_GET_COUNTER(huart->hdmarx);
+      receive_uart_data(rx_buffer,rx_len);
+			HAL_UART_Receive_DMA(&huart2,rx_buffer,1024);
+		}
+	}
+}
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

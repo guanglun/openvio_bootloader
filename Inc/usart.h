@@ -27,7 +27,13 @@
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
+typedef enum {
+  UART_OK     = 0x00u, /**< The action was successful. */
+  UART_ERROR  = 0xFFu  /**< Generic error. */
+} uart_status;
 
+/* Timeout for HAL. */
+#define UART_TIMEOUT ((uint16_t)1000u)
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart2;
@@ -39,7 +45,13 @@ extern UART_HandleTypeDef huart2;
 void MX_USART2_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+uart_status uart_receive(uint8_t *data, uint16_t length);
+uart_status uart_transmit_str(uint8_t *data);
+uart_status uart_transmit_ch(uint8_t data);
+uart_status uart_transmit_buffer(uint8_t *data,uint16_t length);
+void uart_recv_start(void);
+void UsartReceive_IDLE(UART_HandleTypeDef *huart);
+int send_bootloader_version(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

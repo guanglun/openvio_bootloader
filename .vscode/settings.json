@@ -4,6 +4,8 @@
         "usbd_cdc_if.h": "c",
         "main.h": "c",
         "iap.h": "c",
-        "gpio.h": "c"
+        "gpio.h": "c",
+        "flash.h": "c",
+        "config.h": "c"
     }
 }
