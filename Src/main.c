@@ -36,7 +36,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "mpu6050.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -120,7 +120,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim6);
   HAL_TIM_Base_Start_IT(&htim13);
-  printf("hello openvio\r\n");
+  printf("===>>> openvio bootloader\r\n");
 
   /* USER CODE END 2 */
 
@@ -249,21 +249,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-  if (htim->Instance == TIM6) {
-	timer_cnt++;
-    //HAL_GPIO_TogglePin(TEST1_GPIO_Port, TEST1_Pin);
-  }  
-  
-  if (htim->Instance == TIM13) {
-	  //HAL_GPIO_WritePin(TEST1_GPIO_Port, TEST1_Pin, GPIO_PIN_SET);
 
-	  mpu6050_transmit();
-
-	  //HAL_GPIO_WritePin(TEST1_GPIO_Port, TEST1_Pin, GPIO_PIN_RESET);
-	  
-	  //icm20948_transmit();
-    //HAL_GPIO_TogglePin(TEST1_GPIO_Port, TEST1_Pin);
-  }  
   /* USER CODE END Callback 1 */
 }
 

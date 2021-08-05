@@ -111,17 +111,6 @@ Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c \
 Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
 Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
 Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c \
-VIO/lcd_init.c \
-VIO/lcd.c \
-VIO/mpu6050.c \
-VIO/myiic.c \
-VIO/openvio_task.c \
-VIO/openvio.c \
-VIO/sd_card.c \
-VIO/CAM/camera.c \
-VIO/CAM/cambus.c \
-VIO/CAM/mt9v034.c \
-VIO/CAM/ov7725.c
 
 # ASM sources
 ASM_SOURCES =  \
@@ -190,8 +179,6 @@ C_INCLUDES =  \
 -IMiddlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
 -IDrivers/CMSIS/Device/ST/STM32H7xx/Include \
 -IDrivers/CMSIS/Include \
--IVIO \
--IVIO/CAM
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

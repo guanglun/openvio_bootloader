@@ -26,16 +26,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "openvio_task.h"
 #include "dcmi.h"
-#include "sd_card.h"
-#include "openvio.h"
-#include "lcd.h"
 #include "usbd_cdc_if.h"
 
-uint16_t adc_value;
-uint8_t fps_value;
-extern uint8_t fps_count;
 extern USBD_HandleTypeDef hUsbDeviceHS;
 extern struct OPENVIO_STATUS vio_status;
 extern ADC_HandleTypeDef hadc1;
@@ -136,52 +129,13 @@ void MX_FREERTOS_Init(void) {
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
-  osThreadDef(openvioTask, StartOpenvioTask, osPriorityNormal, 0, 2048);
-  openvioTaskHandle = osThreadCreate(osThread(openvioTask), NULL);
 
   /* USER CODE END RTOS_THREADS */
 
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
-DMA_BUFFER uint16_t ADC_ConvertedValue[10];
-uint16_t Get_Adc(uint32_t ch)
-{
-  ADC_ChannelConfTypeDef ADC1_ChanConf;
 
-  ADC1_ChanConf.Channel = ch;
-  ADC1_ChanConf.Rank = ADC_REGULAR_RANK_1;
-  ADC1_ChanConf.SamplingTime = ADC_SAMPLETIME_64CYCLES_5;
-  ADC1_ChanConf.SingleDiff = ADC_SINGLE_ENDED;
-  ADC1_ChanConf.OffsetNumber = ADC_OFFSET_NONE;
-  ADC1_ChanConf.Offset = 0;
-  HAL_ADC_ConfigChannel(&hadc1, &ADC1_ChanConf);
-
-  HAL_ADC_Start(&hadc1);
-
-  HAL_ADC_PollForConversion(&hadc1, 10);
-  return (uint16_t)HAL_ADC_GetValue(&hadc1);
-}
-
-uint16_t Get_Adc_Average(uint32_t ch, uint8_t times)
-{
-  uint32_t temp_val = 0;
-  uint8_t t;
-  for (t = 0; t < times; t++)
-  {
-    temp_val += Get_Adc(ch);
-    HAL_Delay(5);
-  }
-  return temp_val / times;
-}
-
-QueueHandle_t xQueue;
-struct USB_FRAME_STRUCT usb_frame_s;
-extern DMA_BUFFER uint8_t dcmi_image_buffer[CAM_PACKAGE_MAX_SIZE * 2];
-extern TickType_t IMUTimeNow;
-TickType_t CAMTimeNow;
-extern uint8_t imu_lock;
 /**
   * @brief  Function implementing the defaultTask thread.
   * @param  argument: Not used 
@@ -195,46 +149,12 @@ void StartDefaultTask(void const * argument)
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
 
-  HAL_ADCEx_Calibration_Start(&hadc1, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED);
-  xQueue = xQueueCreate(200, sizeof(struct USB_FRAME_STRUCT));
-  if (xQueue == NULL)
-  {
-    printf("Camera xQueueCreate Fail\r\n");
-  }
-
   for (;;)
   {
-    if (xQueueReceive(xQueue, &(usb_frame_s), (TickType_t)0xFFFFFF))
-    {
-      if (usb_frame_s.sensor == SENSOR_USB_CAM)
-      {
-        HAL_GPIO_WritePin(GPIOD, TEST2_Pin, GPIO_PIN_SET);
-
-        while (CAM_Transmit_HS(usb_frame_s.addr, usb_frame_s.len) != 0)
-        {
-          osDelay(1);
-        }
-
-        HAL_GPIO_WritePin(GPIOD, TEST2_Pin, GPIO_PIN_RESET);
-        
-        if (usb_frame_s.len > 20)
-          LCD_Show_Cam(usb_frame_s.addr, usb_frame_s.len);
-      }
-      else if (usb_frame_s.sensor == SENSOR_USB_IMU)
-      {
-        while (MPU_Transmit_HS(usb_frame_s.addr, usb_frame_s.len) != 0)
-        {
-          //osDelay(1);
-        }
-      }
-    }
-
-    // adc_value = Get_Adc_Average(ADC_CHANNEL_16,20);
-    // printf("%d\t%0.2f\t%0.2f\r\n", adc_value,3.3f*(float)adc_value/4096,3.3f*(float)adc_value/4096*2);
-    // osDelay(1000);
-
-    // GPIO_PinState state = HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin);
-    // printf(" %d\r\n", state);
+    // while (CAM_Transmit_HS(usb_frame_s.addr, usb_frame_s.len) != 0)
+    // {
+    //   osDelay(1);
+    // }
 
   }
   /* USER CODE END StartDefaultTask */
@@ -242,11 +162,7 @@ void StartDefaultTask(void const * argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *AdcHandle)
-{
-  ADC_ConvertedValue[0] = HAL_ADC_GetValue(AdcHandle);
-  printf("%d\t%0.2f\r\n", ADC_ConvertedValue[0], 3.3f * (float)ADC_ConvertedValue[0] / 4096);
-}
+
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
