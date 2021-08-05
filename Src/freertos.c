@@ -26,12 +26,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "dcmi.h"
 #include "usbd_cdc_if.h"
 
 extern USBD_HandleTypeDef hUsbDeviceHS;
-extern struct OPENVIO_STATUS vio_status;
-extern ADC_HandleTypeDef hadc1;
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

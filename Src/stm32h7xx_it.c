@@ -59,13 +59,6 @@
 
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_OTG_HS;
-extern DMA_HandleTypeDef hdma_dcmi;
-extern DCMI_HandleTypeDef hdcmi;
-extern SD_HandleTypeDef hsd1;
-extern DMA_HandleTypeDef hdma_spi2_tx;
-extern SPI_HandleTypeDef hspi2;
-extern TIM_HandleTypeDef htim6;
-extern TIM_HandleTypeDef htim13;
 extern TIM_HandleTypeDef htim7;
 
 /* USER CODE BEGIN EV */
@@ -169,90 +162,6 @@ void DebugMon_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles EXTI line4 interrupt.
-  */
-void EXTI4_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI4_IRQn 0 */
-
-  /* USER CODE END EXTI4_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
-  /* USER CODE BEGIN EXTI4_IRQn 1 */
-
-  /* USER CODE END EXTI4_IRQn 1 */
-}
-
-/**
-  * @brief This function handles DMA1 stream0 global interrupt.
-  */
-void DMA1_Stream0_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA1_Stream0_IRQn 0 */
-
-  /* USER CODE END DMA1_Stream0_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_spi2_tx);
-  /* USER CODE BEGIN DMA1_Stream0_IRQn 1 */
-
-  /* USER CODE END DMA1_Stream0_IRQn 1 */
-}
-
-/**
-  * @brief This function handles SPI2 global interrupt.
-  */
-void SPI2_IRQHandler(void)
-{
-  /* USER CODE BEGIN SPI2_IRQn 0 */
-
-  /* USER CODE END SPI2_IRQn 0 */
-  HAL_SPI_IRQHandler(&hspi2);
-  /* USER CODE BEGIN SPI2_IRQn 1 */
-
-  /* USER CODE END SPI2_IRQn 1 */
-}
-
-/**
-  * @brief This function handles TIM8 update interrupt and TIM13 global interrupt.
-  */
-void TIM8_UP_TIM13_IRQHandler(void)
-{
-  /* USER CODE BEGIN TIM8_UP_TIM13_IRQn 0 */
-
-  /* USER CODE END TIM8_UP_TIM13_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim13);
-  /* USER CODE BEGIN TIM8_UP_TIM13_IRQn 1 */
-
-  /* USER CODE END TIM8_UP_TIM13_IRQn 1 */
-}
-
-/**
-  * @brief This function handles SDMMC1 global interrupt.
-  */
-void SDMMC1_IRQHandler(void)
-{
-  /* USER CODE BEGIN SDMMC1_IRQn 0 */
-
-  /* USER CODE END SDMMC1_IRQn 0 */
-  HAL_SD_IRQHandler(&hsd1);
-  /* USER CODE BEGIN SDMMC1_IRQn 1 */
-
-  /* USER CODE END SDMMC1_IRQn 1 */
-}
-
-/**
-  * @brief This function handles TIM6 global interrupt, DAC1_CH1 and DAC1_CH2 underrun error interrupts.
-  */
-void TIM6_DAC_IRQHandler(void)
-{
-  /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
-
-  /* USER CODE END TIM6_DAC_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim6);
-  /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
-
-  /* USER CODE END TIM6_DAC_IRQn 1 */
-}
-
-/**
   * @brief This function handles TIM7 global interrupt.
   */
 void TIM7_IRQHandler(void)
@@ -267,20 +176,6 @@ void TIM7_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles DMA2 stream1 global interrupt.
-  */
-void DMA2_Stream1_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA2_Stream1_IRQn 0 */
-
-  /* USER CODE END DMA2_Stream1_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_dcmi);
-  /* USER CODE BEGIN DMA2_Stream1_IRQn 1 */
-
-  /* USER CODE END DMA2_Stream1_IRQn 1 */
-}
-
-/**
   * @brief This function handles USB On The Go HS global interrupt.
   */
 void OTG_HS_IRQHandler(void)
@@ -291,20 +186,6 @@ void OTG_HS_IRQHandler(void)
   HAL_PCD_IRQHandler(&hpcd_USB_OTG_HS);
   /* USER CODE BEGIN OTG_HS_IRQn 1 */
   /* USER CODE END OTG_HS_IRQn 1 */
-}
-
-/**
-  * @brief This function handles DCMI global interrupt.
-  */
-void DCMI_IRQHandler(void)
-{
-  /* USER CODE BEGIN DCMI_IRQn 0 */
-
-  /* USER CODE END DCMI_IRQn 0 */
-  HAL_DCMI_IRQHandler(&hdcmi);
-  /* USER CODE BEGIN DCMI_IRQn 1 */
-
-  /* USER CODE END DCMI_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
