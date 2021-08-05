@@ -5,7 +5,7 @@
 
 extern USBD_HandleTypeDef hUsbDeviceHS;
 
-int isReadUpgrade = 0;
+int isReadUpgrade = 1;
 int jump_app_count = JUMP_APP_DELAY;
 
 void boot(void)
@@ -15,15 +15,24 @@ void boot(void)
 
     while (jump_app_count--)
     {
+        parse_loop();
         HAL_Delay(1);
     }
 
-    printf("start jump to app ...\r\n");
-    //HAL_Delay(1000);
-
-    if(!iap_jump_to(FLASH_APP_START_ADDRESS))
+    if(isReadUpgrade == 0)
     {
-        printf("jump fail, loop\r\n");
+        printf("start jump to app ...\r\n");
+
+        if(!iap_jump_to(FLASH_APP_START_ADDRESS))
+        {
+            printf("jump fail, loop\r\n");
+        }
+    }
+
+    printf("loop...\r\n");
+    while(1)
+    {
+        parse_loop();
     }
 }
 
