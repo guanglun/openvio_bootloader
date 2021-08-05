@@ -26,7 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "iap.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -101,6 +101,7 @@ int main(void)
 
   printf("===>>> openvio bootloader\r\n");
 
+  boot();
   /* USER CODE END 2 */
 
   /* Infinite loop */

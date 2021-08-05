@@ -6,4 +6,8 @@
 #include "usb_device.h"
 #include "gpio.h"
 
+#include "config.h"
+
+void boot(void);
+
 #endif
