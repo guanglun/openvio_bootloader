@@ -5,7 +5,7 @@
 
 extern USBD_HandleTypeDef hUsbDeviceHS;
 
-int isReadUpgrade = 1;
+int isReadUpgrade = 0;
 int jump_app_count = JUMP_APP_DELAY;
 
 void boot(void)
