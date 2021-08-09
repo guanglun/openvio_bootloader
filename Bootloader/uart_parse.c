@@ -33,7 +33,7 @@ void recv_uart_farme(void *arg)
 uint8_t recv_buffer[1024];
 uint16_t recv_len = 0;
 
-void parse_loop(void)
+void uart_parse_loop(void)
 {
 
     if(is_recv != 0)

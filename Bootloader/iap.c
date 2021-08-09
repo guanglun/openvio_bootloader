@@ -2,10 +2,11 @@
 #include "flash.h"
 #include "string.h"
 #include "uart_parse.h"
+#include "usb_parse.h"
 
 extern USBD_HandleTypeDef hUsbDeviceHS;
 
-int isReadUpgrade = 0;
+int isReadUpgrade = 1;
 int jump_app_count = JUMP_APP_DELAY;
 
 void boot(void)
@@ -13,9 +14,12 @@ void boot(void)
     uart_recv_start();
     uart_receive_struct_init();
 
+    usb_receive_struct_init();
+
     while (jump_app_count--)
     {
-        parse_loop();
+        uart_parse_loop();
+        usb_parse_loop();
         HAL_Delay(1);
     }
 
@@ -32,7 +36,8 @@ void boot(void)
     printf("loop...\r\n");
     while(1)
     {
-        parse_loop();
+        uart_parse_loop();
+        usb_parse_loop();
     }
 }
 

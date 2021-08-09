@@ -217,7 +217,7 @@ __ALIGN_BEGIN uint8_t USBD_CDC_CfgHSDesc[WINUSB_CONFIG_DESC_SIZE] __ALIGN_END =
   /*Endpoint Interval Descriptor*/
   0x07,   /* bLength: Endpoint Descriptor size */
   USB_DESC_TYPE_ENDPOINT,      /* bDescriptorType: Endpoint */
-  MPU_IN_EP,                        /* bEndpointAddress */
+  CDC_OUT_EP,                        /* bEndpointAddress */
   0x02,          /*bmAttributes: Interrupt endpoint*/
   LOBYTE(CDC_DATA_HS_MAX_PACKET_SIZE),  /* wMaxPacketSize: */
   HIBYTE(CDC_DATA_HS_MAX_PACKET_SIZE),
@@ -263,7 +263,7 @@ __ALIGN_BEGIN uint8_t USBD_CDC_CfgFSDesc[WINUSB_CONFIG_DESC_SIZE] __ALIGN_END =
   /*Endpoint Interval Descriptor*/
   0x07,   /* bLength: Endpoint Descriptor size */
   USB_DESC_TYPE_ENDPOINT,      /* bDescriptorType: Endpoint */
-  MPU_IN_EP,                        /* bEndpointAddress */
+  CDC_OUT_EP,                        /* bEndpointAddress */
   0x02,          /*bmAttributes: Interrupt endpoint*/
   LOBYTE(CDC_DATA_FS_MAX_PACKET_SIZE),  /* wMaxPacketSize: */
   HIBYTE(CDC_DATA_FS_MAX_PACKET_SIZE),
@@ -300,13 +300,11 @@ static uint8_t  USBD_CDC_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 
     pdev->ep_in[CDC_IN_EP & 0xFU].is_used = 1U;
 
-    USBD_LL_OpenEP(pdev, MPU_IN_EP, USBD_EP_TYPE_BULK, CDC_DATA_HS_IN_PACKET_SIZE);
-    pdev->ep_in[MPU_IN_EP & 0xFU].is_used = 1U;
-    // /* Open EP OUT */
-    // USBD_LL_OpenEP(pdev, CDC_OUT_EP, USBD_EP_TYPE_BULK,
-    //                CDC_DATA_HS_OUT_PACKET_SIZE);
+    /* Open EP OUT */
+    USBD_LL_OpenEP(pdev, CDC_OUT_EP, USBD_EP_TYPE_BULK,
+                   CDC_DATA_HS_OUT_PACKET_SIZE);
 
-    // pdev->ep_out[CDC_OUT_EP & 0xFU].is_used = 1U;
+    pdev->ep_out[CDC_OUT_EP & 0xFU].is_used = 1U;
 
   }
   else
@@ -317,13 +315,11 @@ static uint8_t  USBD_CDC_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 
     pdev->ep_in[CDC_IN_EP & 0xFU].is_used = 1U;
 
-    USBD_LL_OpenEP(pdev, MPU_IN_EP, USBD_EP_TYPE_BULK, CDC_DATA_FS_IN_PACKET_SIZE);
-    pdev->ep_in[MPU_IN_EP & 0xFU].is_used = 1U;
-    // /* Open EP OUT */
-    // USBD_LL_OpenEP(pdev, CDC_OUT_EP, USBD_EP_TYPE_BULK,
-    //                CDC_DATA_FS_OUT_PACKET_SIZE);
+    /* Open EP OUT */
+    USBD_LL_OpenEP(pdev, CDC_OUT_EP, USBD_EP_TYPE_BULK,
+                   CDC_DATA_FS_OUT_PACKET_SIZE);
 
-    // pdev->ep_out[CDC_OUT_EP & 0xFU].is_used = 1U;
+    pdev->ep_out[CDC_OUT_EP & 0xFU].is_used = 1U;
   }
 
 
@@ -376,13 +372,11 @@ static uint8_t  USBD_CDC_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
   USBD_LL_CloseEP(pdev, CDC_IN_EP);
   pdev->ep_in[CDC_IN_EP & 0xFU].is_used = 0U;
 
-  // /* Close EP OUT */
-  // USBD_LL_CloseEP(pdev, CDC_OUT_EP);
-  // pdev->ep_out[CDC_OUT_EP & 0xFU].is_used = 0U;
+  /* Close EP OUT */
+  USBD_LL_CloseEP(pdev, CDC_OUT_EP);
+  pdev->ep_out[CDC_OUT_EP & 0xFU].is_used = 0U;
 
   /* Close Command IN EP */
-  USBD_LL_CloseEP(pdev, MPU_IN_EP);
-  pdev->ep_in[MPU_IN_EP & 0xFU].is_used = 0U;
 
   /* DeInit  physical Interface components */
   if (pdev->pClassData != NULL)
@@ -727,42 +721,6 @@ uint8_t  USBD_CDC_TransmitPacket(USBD_HandleTypeDef *pdev)
 }
 
 /**
-  * @brief  USBD_MPU_TransmitPacket
-  *         Transmit packet on IN endpoint
-  * @param  pdev: device instance
-  * @retval status
-  */
-uint8_t  USBD_MPU_TransmitPacket(USBD_HandleTypeDef *pdev)
-{
-  USBD_CDC_HandleTypeDef   *hcdc = (USBD_CDC_HandleTypeDef *) pdev->pClassData;
-
-  if (pdev->pClassData != NULL)
-  {
-    if (hcdc->TxState == 0U)
-    {
-      /* Tx Transfer in progress */
-      hcdc->TxState = 1U;
-
-      /* Update the packet total length */
-      pdev->ep_in[MPU_IN_EP & 0xFU].total_length = hcdc->TxLength;
-
-      /* Transmit next packet */
-      USBD_LL_Transmit(pdev, MPU_IN_EP, hcdc->TxBuffer,
-                       (uint16_t)hcdc->TxLength);
-
-      return USBD_OK;
-    }
-    else
-    {
-      return USBD_BUSY;
-    }
-  }
-  else
-  {
-    return USBD_FAIL;
-  }
-}
-/**
   * @brief  USBD_CDC_ReceivePacket
   *         prepare OUT Endpoint for reception
   * @param  pdev: device instance
@@ -799,27 +757,6 @@ uint8_t  USBD_CDC_ReceivePacket(USBD_HandleTypeDef *pdev)
   }
 }
 
-uint8_t USBD_MPU_SendReport(USBD_HandleTypeDef  *pdev,
-                            uint8_t *report,
-                            uint16_t len)
-{
-  USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef *)pdev->pClassData;
-  if (pdev->dev_state == USBD_STATE_CONFIGURED)
-  {
-    if (hcdc->TxState == 0U)
-    {
-      /* Tx Transfer in progress */
-      hcdc->TxState = 1U;
-      
-      USBD_LL_Transmit(pdev,
-                       MPU_IN_EP,
-                       report,
-                       len);
-
-    }
-  }
-  return USBD_OK;
-}
 
 /**
   * @}
