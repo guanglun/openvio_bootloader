@@ -7,8 +7,8 @@ HeaderPath=Drivers\STM32H7xx_HAL_Driver\Inc;Drivers\STM32H7xx_HAL_Driver\Inc\Leg
 CDefines=USE_HAL_DRIVER;STM32H743xx;USE_HAL_DRIVER;USE_HAL_DRIVER;
 
 [PreviousGenFiles]
-HeaderPath=D:/3.code/OPENVIO_BOOTLOADER/Inc
+HeaderPath=D:/windows/Desktop/CODE/openvio_bootloader/Inc
 HeaderFiles=gpio.h;dma.h;usart.h;usb_device.h;usbd_conf.h;usbd_desc.h;usbd_cdc_if.h;stm32h7xx_it.h;stm32h7xx_hal_conf.h;main.h;
-SourcePath=D:/3.code/OPENVIO_BOOTLOADER/Src
+SourcePath=D:/windows/Desktop/CODE/openvio_bootloader/Src
 SourceFiles=gpio.c;dma.c;usart.c;usb_device.c;usbd_conf.c;usbd_desc.c;usbd_cdc_if.c;stm32h7xx_it.c;stm32h7xx_hal_msp.c;main.c;
 

@@ -191,6 +191,7 @@ typedef struct _Device_cb
 #if (USBD_SUPPORT_USER_STRING_DESC == 1U)
   uint8_t  *(*GetUsrStrDescriptor)(struct _USBD_HandleTypeDef *pdev, uint8_t index,  uint16_t *length);
 #endif
+
 #if (USBD_SUPPORT_WINUSB == 1) 
   uint8_t  *(*GetWinUSBOSDescriptor)(uint16_t *length); 
 #endif   

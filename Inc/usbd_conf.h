@@ -40,6 +40,7 @@
 /* USER CODE END INCLUDE */
 
 /** @addtogroup USBD_OTG_DRIVER
+  * @brief Driver for Usb device.
   * @{
   */
 
@@ -75,7 +76,6 @@
 /*---------- -----------*/
 #define USBD_SELF_POWERED     1U
 
-#define USBD_SUPPORT_WINUSB       1U
 /****************************************/
 /* #define for FS and HS identification */
 #define DEVICE_FS 		0
