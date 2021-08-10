@@ -105,10 +105,8 @@ IAP_STATUS parse_iap_frame(PARSE_STRUCT *parse_uart)
             crc = 0;
             iap_s.bin_size = temp32;
 
-            printf("start erase ...\r\n");
             if (flash_erase_app() == FLASH_OK)
             {
-                printf("end erase ...\r\n");
                 result = IAP_OK;
             }
 
