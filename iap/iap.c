@@ -5,6 +5,7 @@
 #include "usb_parse.h"
 
 extern USBD_HandleTypeDef hUsbDeviceHS;
+extern struct EEPROM_CONFIG_STRUCT eeprom;
 
 int isReadUpgrade = 0;
 int jump_app_count = JUMP_APP_DELAY;
@@ -15,6 +16,10 @@ void boot(void)
     uart_receive_struct_init();
 
     usb_receive_struct_init();
+
+    flash_eeprom_load();
+    printf("boot count %d\r\n",eeprom.boot_count++);
+    flash_eeprom_save();
 
     while (jump_app_count--)
     {
@@ -105,7 +110,7 @@ IAP_STATUS parse_iap_frame(PARSE_STRUCT *parse_uart)
             crc = 0;
             iap_s.bin_size = temp32;
 
-            if (flash_erase_app() == FLASH_OK)
+            if (flash_erase_app(iap_s.bin_size) == FLASH_OK)
             {
                 result = IAP_OK;
             }

@@ -73,13 +73,13 @@ Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c \
 Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
 Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
 Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c \
-Bootloader/iap.c \
-Bootloader/frame_parse.c \
-Bootloader/frame_send.c \
-Bootloader/flash.c \
-Bootloader/uart_parse.c \
+iap/iap.c \
+iap/frame_parse.c \
+iap/frame_send.c \
+iap/flash.c \
+iap/uart_parse.c \
 Src/dma.c \
-Bootloader/usb_parse.c
+iap/usb_parse.c
 
 # ASM sources
 ASM_SOURCES =  \
@@ -144,7 +144,7 @@ C_INCLUDES =  \
 -IMiddlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
 -IDrivers/CMSIS/Device/ST/STM32H7xx/Include \
 -IDrivers/CMSIS/Include \
--IBootloader
+-Iiap
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

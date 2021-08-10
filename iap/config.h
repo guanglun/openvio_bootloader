@@ -20,6 +20,13 @@ extern "C" {
 /* Start and end addresses of the user application. */
 #define FLASH_APP_START_ADDRESS         ((uint32_t)0x08020000u)
 #define FLASH_APP_END_ADDRESS           ((uint32_t)FLASH_BANK2_BASE-1)
+#define FLASH_EEPROM_START_ADDRESS      ((uint32_t)FLASH_BANK2_BASE)
+
+
+struct EEPROM_CONFIG_STRUCT{
+  uint32_t boot_count;
+};
+
 
 #ifdef __cplusplus
 }

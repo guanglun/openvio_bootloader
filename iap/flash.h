@@ -22,9 +22,12 @@ typedef enum {
   FLASH_ERROR           = 0xFFu  /**< Generic error. */
 } flash_status;
 
-flash_status flash_erase_app(void);
+flash_status flash_erase_app(uint32_t length);
 flash_status flash_erase_sector(uint8_t sector_num);
 flash_status flash_write(uint32_t address, uint8_t *data, uint32_t length);
+
+void flash_eeprom_load(void);
+void flash_eeprom_save(void);
 void flash_jump_to_app(void);
 
 #endif /* FLASH_H_ */
