@@ -1,11 +1,17 @@
-#ifndef __CONFIG_H__
-#define __CONFIG_H__
+#ifndef __GL_PROTOCOL_CONFIG_H__
+#define __GL_PROTOCOL_CONFIG_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "main.h"
+
+#define LOCAL_ID     0x02
+#define TARGET_ID    0x01
+
+
+#define FRAME_DATA_MAX_SIZE  (2048-11)
 
 #define JUMP_APP_DELAY  1000
 

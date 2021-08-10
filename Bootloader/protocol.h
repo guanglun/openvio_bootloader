@@ -5,9 +5,10 @@
 extern "C" {
 #endif
 
-#include "main.h"
+#include "gl_protocol_config.h"
 
-#define FRAME_MAX (255 + 11)
+#define FRAME_OTHER_SIZE 11
+#define FRAME_MAX (FRAME_DATA_MAX_SIZE + FRAME_OTHER_SIZE)
 //(11 + 1024*4)
 #define VERSION_HEAD 			0xAA
 

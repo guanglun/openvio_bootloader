@@ -7,7 +7,7 @@ PARSE_RETURN send_frame_creat(PARSE_STRUCT *parse_s,FRAME_STRUCT *frame_s,uint8_
 	uint16_t count = 0;
 	uint16_t frame_flag;
 
-	if(frame_s->FrameDataLen > 255)
+	if(frame_s->FrameDataLen > FRAME_DATA_MAX_SIZE)
 	{
 		return PARSE_FAIL;
 	}
@@ -59,7 +59,7 @@ PARSE_RETURN send_frame_creat(PARSE_STRUCT *parse_s,FRAME_STRUCT *frame_s,uint8_
 PARSE_RETURN creat_send_cmd(PARSE_STRUCT *parse_s,FRAME_STRUCT *frame_s)
 {
 	uint16_t frame_len = 0;
-	uint8_t frame_buffer[256+11];
+	uint8_t frame_buffer[FRAME_MAX];
     
     if(send_frame_creat(parse_s,frame_s, frame_buffer,&frame_len) != PARSE_OK)
 	{

@@ -93,7 +93,6 @@ void parse_data(PARSE_STRUCT *parse_s, uint8_t *receive_buffer, uint16_t receive
             if (parse_s->version == PROTOCOL_VERSION)
             {
                 parse_s->frame_data_len |= (uint16_t)(receive_buffer[data_cnt] << 8);
-
                 if (parse_s->frame_data_len > FRAME_MAX)
                 {
                     parse_s->sta = NOHEAD;

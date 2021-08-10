@@ -60,14 +60,17 @@ flash_status flash_erase_sector(uint8_t sector_num)
  * @param   *length: Size of the array.
  * @return  status: Report about the success of the writing.
  */
-flash_status flash_write(uint32_t address, uint32_t *data, uint32_t length)
+flash_status flash_write(uint32_t address, uint8_t *data, uint32_t length)
 {
   flash_status status = FLASH_OK;
+  uint64_t FlashWord[4];
+
+  __set_PRIMASK(1);          /* 关中断 */
 
   HAL_FLASH_Unlock();
 
   /* Loop through the array. */
-  for (uint32_t i = 0u; (i < length) && (FLASH_OK == status); i++)
+  for (uint32_t i = 0u; (i < length/32) && (FLASH_OK == status); i++)
   {
     /* If we reached the end of the memory, then report an error and don't do anything else.*/
     if (FLASH_APP_END_ADDRESS <= address)
@@ -76,24 +79,35 @@ flash_status flash_write(uint32_t address, uint32_t *data, uint32_t length)
     }
     else
     {
+      memcpy((char *)FlashWord, data, 32);
+      data += 32;
       /* The actual flashing. If there is an error, then report it. */
-      if (HAL_OK != HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, address, data[i]))
+      if (HAL_OK != HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, address, FlashWord))
       {
         status |= FLASH_ERROR_WRITE;
       }
-      // /* Read back the content of the memory. If it is wrong, then report an error. */
-      if (((data[i])) != (*(__IO uint32_t*)address))
-      {
-        status |= FLASH_ERROR_READBACK;
-      }
-
       /* Shift the address by a word. */
-      address += 4u;
+      address += 32u;
     }
   }
 
-  HAL_FLASH_Lock();
+  if(length % 32)
+  {
+    FlashWord[0] = 0;
+    FlashWord[1] = 0;
+    FlashWord[2] = 0;
+    FlashWord[3] = 0;
 
+      memcpy((char *)FlashWord, data, 32);
+      /* The actual flashing. If there is an error, then report it. */
+      if (HAL_OK != HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, address, FlashWord))
+      {
+        status |= FLASH_ERROR_WRITE;
+      }
+  }
+
+  HAL_FLASH_Lock();
+  __set_PRIMASK(0);          /* 开中断 */
   return status;
 }
 

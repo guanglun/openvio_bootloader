@@ -14,18 +14,18 @@ PARSE_STRUCT parse_usb;
 uint8_t is_usb_recv = 0;
 void send_usb_data(uint8_t *send_buffer,uint16_t send_len);
 
-// void printf_frame(FRAME_STRUCT *frame_s)
-// {
-//     // Log("Version:%02X ",frame_s->Version);
-//     // Log("FrameDataLen:%02X ",frame_s->FrameDataLen);
-//     // Log("SourceID:%02X ",frame_s->SourceID);
-//     // Log("TargetID:%02X ",frame_s->TargetID);
-//     // Log("Cmd:%02X ",frame_s->Cmd);
-//     // Log("DataIndex:%02X ",frame_s->DataIndex);
-//     // Log("Data:");
-//     // printf_byte(frame_s->frame_data,frame_s->FrameDataLen);
-//     // Log("\r\n");
-// }
+static void usb_printf_frame(FRAME_STRUCT *frame_s)
+{
+    printf("Version:%02X ",frame_s->Version);
+    printf("FrameDataLen:%02X ",frame_s->FrameDataLen);
+    printf("SourceID:%02X ",frame_s->SourceID);
+    printf("TargetID:%02X ",frame_s->TargetID);
+    printf("Cmd:%02X ",frame_s->Cmd);
+    printf("DataIndex:%02X ",frame_s->DataIndex);
+    //printf("Data:");
+    //printf_byte(frame_s->frame_data,frame_s->FrameDataLen);
+    printf("\r\n");
+}
 
 void recv_usb_farme(void *arg)
 {
@@ -39,6 +39,7 @@ void usb_parse_loop(void)
 {
     if(is_usb_recv != 0)
     {
+        //usb_printf_frame(&parse_usb.frame_s);
         if(parse_usb.frame_s.TargetID == LOCAL_ID)
         {
             parse_iap_frame(&parse_usb);
@@ -64,7 +65,7 @@ void receive_usb_data(uint8_t *receive_buffer,uint16_t receive_len)
 
 void send_usb_data(uint8_t *send_buffer,uint16_t send_len)
 {
-	
+	CDC_Transmit_HS(send_buffer,send_len);
 }
 
 // int return_status(uint8_t status, uint8_t power)
