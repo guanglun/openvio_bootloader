@@ -16,20 +16,27 @@ void boot(void)
     uart_receive_struct_init();
 
     usb_receive_struct_init();
-
     flash_eeprom_load();
-    printf("boot count %d\r\n",eeprom.boot_count++);
-    flash_eeprom_save();
+    printf("boot count %u\r\n",eeprom.boot_count++);
+    
 
-    while (jump_app_count--)
+    if(eeprom.reboot_to_bootloader == 1)
     {
-        uart_parse_loop();
-        usb_parse_loop();
-        HAL_Delay(1);
+        eeprom.reboot_to_bootloader = 0;
+        isReadUpgrade = 1;
     }
+
+    flash_eeprom_save();
 
     if(isReadUpgrade == 0)
     {
+        while (jump_app_count--)
+        {
+            uart_parse_loop();
+            usb_parse_loop();
+            HAL_Delay(1);
+        }
+
         printf("start jump to app ...\r\n");
 
         if(!iap_jump_to(FLASH_APP_START_ADDRESS))
@@ -185,6 +192,7 @@ IAP_STATUS parse_iap_frame(PARSE_STRUCT *parse_uart)
             break;
         case CMD_IAP_RESET:
             printf("reboot...\r\n");
+            __set_FAULTMASK(1);
             NVIC_SystemReset();
             break;
         case CMD_IAP_READY:
