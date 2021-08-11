@@ -16,6 +16,7 @@ void boot(void)
     uart_receive_struct_init();
 
     usb_receive_struct_init();
+
     flash_eeprom_load();
     printf("boot count %u\r\n",eeprom.boot_count++);
     
