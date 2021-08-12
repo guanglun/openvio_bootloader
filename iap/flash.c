@@ -153,13 +153,14 @@ void flash_eeprom_save(void)
     status = FLASH_OK;
   }
 
-
   if (HAL_OK != HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, FLASH_EEPROM_START_ADDRESS, FlashWord))
   {
     status |= FLASH_ERROR_WRITE;
   }
 
   HAL_FLASH_Lock();
+
+  //printf("flash save success\r\n");
 }
 
 void flash_eeprom_load(void)

@@ -22,16 +22,17 @@ void boot(void)
     usb_receive_struct_init();
 
     flash_eeprom_load();
-    printf("boot count %u\r\n",eeprom.boot_count++);
     
     if(eeprom.reboot_to_bootloader == 1 || 
     HAL_GPIO_ReadPin(KEY_GPIO_Port,KEY_Pin) == GPIO_PIN_RESET)
     {
-        eeprom.reboot_to_bootloader = 0;
+        if(eeprom.reboot_to_bootloader == 1)
+        {
+            eeprom.reboot_to_bootloader = 0;
+            flash_eeprom_save();
+        }
         isReadUpgrade = 1;
     }
-
-    flash_eeprom_save();
 
     if(isReadUpgrade == 0)
     {

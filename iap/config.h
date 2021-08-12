@@ -24,8 +24,8 @@ extern "C" {
 
 
 struct EEPROM_CONFIG_STRUCT{
-  uint32_t boot_count;
   uint32_t reboot_to_bootloader;
+  int32_t exposure;
 }__attribute__ ((aligned (4)));;
 
 
