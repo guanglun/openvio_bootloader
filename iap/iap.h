@@ -38,5 +38,7 @@ typedef enum {
 }IAP_STATUS;
 
 void boot(void);
+int usb_recv(uint8_t cmd, uint8_t *pbuf, uint16_t length);
+int usb_ctrl(uint8_t cmd, uint8_t *pbuf);
 
 #endif

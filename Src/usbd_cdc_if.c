@@ -188,6 +188,11 @@ static int8_t CDC_DeInit_HS(void)
 static int8_t CDC_Control_HS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 {
   /* USER CODE BEGIN 10 */
+  if(usb_recv(cmd, pbuf, length) < 0)
+  {
+    return USBD_FAIL;
+  }
+
   switch(cmd)
   {
   case CDC_SEND_ENCAPSULATED_COMMAND:

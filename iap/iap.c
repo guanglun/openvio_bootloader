@@ -10,6 +10,10 @@ extern struct EEPROM_CONFIG_STRUCT eeprom;
 int isReadUpgrade = 0;
 int jump_app_count = JUMP_APP_DELAY;
 
+#define VERSION1 0
+#define VERSION2 0
+#define VERSION3 1
+
 void boot(void)
 {
     uart_recv_start();
@@ -20,8 +24,8 @@ void boot(void)
     flash_eeprom_load();
     printf("boot count %u\r\n",eeprom.boot_count++);
     
-
-    if(eeprom.reboot_to_bootloader == 1)
+    if(eeprom.reboot_to_bootloader == 1 || 
+    HAL_GPIO_ReadPin(KEY_GPIO_Port,KEY_Pin) == GPIO_PIN_RESET)
     {
         eeprom.reboot_to_bootloader = 0;
         isReadUpgrade = 1;
@@ -31,12 +35,12 @@ void boot(void)
 
     if(isReadUpgrade == 0)
     {
-        while (jump_app_count--)
-        {
-            uart_parse_loop();
-            usb_parse_loop();
-            HAL_Delay(1);
-        }
+        // while (jump_app_count--)
+        // {
+        //     uart_parse_loop();
+        //     usb_parse_loop();
+        //     HAL_Delay(1);
+        // }
 
         printf("start jump to app ...\r\n");
 
@@ -52,6 +56,58 @@ void boot(void)
         uart_parse_loop();
         usb_parse_loop();
     }
+}
+
+//OUT
+#define REQUEST_SET_REBOOT 0x01
+
+//IN
+#define REQUEST_GET_VERSION 0x00
+
+
+extern struct EEPROM_CONFIG_STRUCT eeprom;
+
+int usb_recv(uint8_t cmd, uint8_t *pbuf, uint16_t length)
+{
+	int ret = 0;
+	switch (cmd)
+	{
+	case REQUEST_SET_REBOOT:
+		if(pbuf[0] == 0)
+		{
+			eeprom.reboot_to_bootloader = 1;
+            flash_eeprom_save();
+            __set_FAULTMASK(1);
+            NVIC_SystemReset();
+		}else if(pbuf[0] == 1)
+		{
+            __set_FAULTMASK(1);
+            NVIC_SystemReset();
+		}
+		break;
+	default:
+		ret = -1;
+		break;
+	}
+	return ret;
+}
+
+int usb_ctrl(uint8_t cmd, uint8_t *pbuf)
+{
+	int ret = 0;
+	switch (cmd)
+	{
+	case REQUEST_GET_VERSION:
+		pbuf[0] = VERSION1;
+		pbuf[1] = VERSION2;
+		pbuf[2] = VERSION3;
+		ret = 3;
+		break;
+	default:
+		ret = -1;
+		break;
+	}
+	return ret;
 }
 
 struct IAP_STRUCT

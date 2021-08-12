@@ -407,77 +407,107 @@ static uint8_t  USBD_CDC_Setup(USBD_HandleTypeDef *pdev,
   uint8_t ifalt = 0U;
   uint16_t status_info = 0U;
   uint8_t ret = USBD_OK;
-
+  uint8_t s_data[128], s_len;
   switch (req->bmRequest & USB_REQ_TYPE_MASK)
   {
-    case USB_REQ_TYPE_CLASS :
-      if (req->wLength)
+    // case USB_REQ_TYPE_CLASS :
+    //   if (req->wLength)
+    //   {
+    //     if (req->bmRequest & 0x80U)
+    //     {
+    //       ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Control(req->bRequest,
+    //                                                         (uint8_t *)(void *)hcdc->data,
+    //                                                         req->wLength);
+
+    //       USBD_CtlSendData(pdev, (uint8_t *)(void *)hcdc->data, req->wLength);
+    //     }
+    //     else
+    //     {
+    //       hcdc->CmdOpCode = req->bRequest;
+    //       hcdc->CmdLength = (uint8_t)req->wLength;
+
+    //       USBD_CtlPrepareRx(pdev, (uint8_t *)(void *)hcdc->data, req->wLength);
+    //     }
+    //   }
+    //   else
+    //   {
+    //     ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Control(req->bRequest,
+    //                                                       (uint8_t *)(void *)req, 0U);
+    //   }
+    //   break;
+
+    // case USB_REQ_TYPE_STANDARD:
+    //   switch (req->bRequest)
+    //   {
+    //     case USB_REQ_GET_STATUS:
+    //       if (pdev->dev_state == USBD_STATE_CONFIGURED)
+    //       {
+    //         USBD_CtlSendData(pdev, (uint8_t *)(void *)&status_info, 2U);
+    //       }
+    //       else
+    //       {
+    //         USBD_CtlError(pdev, req);
+    //         ret = USBD_FAIL;
+    //       }
+    //       break;
+
+    //     case USB_REQ_GET_INTERFACE:
+    //       if (pdev->dev_state == USBD_STATE_CONFIGURED)
+    //       {
+    //         USBD_CtlSendData(pdev, &ifalt, 1U);
+    //       }
+    //       else
+    //       {
+    //         USBD_CtlError(pdev, req);
+    //         ret = USBD_FAIL;
+    //       }
+    //       break;
+
+    //     case USB_REQ_SET_INTERFACE:
+    //       if (pdev->dev_state != USBD_STATE_CONFIGURED)
+    //       {
+    //         USBD_CtlError(pdev, req);
+    //         ret = USBD_FAIL;
+    //       }
+    //       break;
+
+    //     default:
+    //       USBD_CtlError(pdev, req);
+    //       ret = USBD_FAIL;
+    //       break;
+    //   }
+    //   break;
+    //zsp device config
+  case USB_REQ_TYPE_VENDOR:
+
+    if (req->wLength)
+    {
+      if (req->bmRequest & 0x80U)
       {
-        if (req->bmRequest & 0x80U)
-        {
-          ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Control(req->bRequest,
-                                                            (uint8_t *)(void *)hcdc->data,
-                                                            req->wLength);
 
-          USBD_CtlSendData(pdev, (uint8_t *)(void *)hcdc->data, req->wLength);
-        }
-        else
+        s_len = usb_ctrl(req->bRequest, s_data);
+        if(s_len >= 0)
         {
-          hcdc->CmdOpCode = req->bRequest;
-          hcdc->CmdLength = (uint8_t)req->wLength;
-
-          USBD_CtlPrepareRx(pdev, (uint8_t *)(void *)hcdc->data, req->wLength);
+          USBD_CtlSendData(pdev, s_data, s_len);
+        }else{
+          USBD_CtlError(pdev, req);
+          ret = USBD_FAIL;
         }
+        
       }
       else
       {
-        ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Control(req->bRequest,
-                                                          (uint8_t *)(void *)req, 0U);
+        hcdc->CmdOpCode = req->bRequest;
+        hcdc->CmdLength = (uint8_t)req->wLength;
+
+        USBD_CtlPrepareRx(pdev, (uint8_t *)(void *)hcdc->data, req->wLength);
       }
-      break;
-
-    case USB_REQ_TYPE_STANDARD:
-      switch (req->bRequest)
-      {
-        case USB_REQ_GET_STATUS:
-          if (pdev->dev_state == USBD_STATE_CONFIGURED)
-          {
-            USBD_CtlSendData(pdev, (uint8_t *)(void *)&status_info, 2U);
-          }
-          else
-          {
-            USBD_CtlError(pdev, req);
-            ret = USBD_FAIL;
-          }
-          break;
-
-        case USB_REQ_GET_INTERFACE:
-          if (pdev->dev_state == USBD_STATE_CONFIGURED)
-          {
-            USBD_CtlSendData(pdev, &ifalt, 1U);
-          }
-          else
-          {
-            USBD_CtlError(pdev, req);
-            ret = USBD_FAIL;
-          }
-          break;
-
-        case USB_REQ_SET_INTERFACE:
-          if (pdev->dev_state != USBD_STATE_CONFIGURED)
-          {
-            USBD_CtlError(pdev, req);
-            ret = USBD_FAIL;
-          }
-          break;
-
-        default:
-          USBD_CtlError(pdev, req);
-          ret = USBD_FAIL;
-          break;
-      }
-      break;
-
+    }
+    else
+    {
+      ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->Control(req->bRequest, (uint8_t *)(void *)req, 0U);
+    }
+    break;
     default:
       USBD_CtlError(pdev, req);
       ret = USBD_FAIL;
