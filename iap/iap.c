@@ -170,6 +170,7 @@ IAP_STATUS parse_iap_frame(PARSE_STRUCT *parse_uart)
             result = IAP_OK;
             break;             
         case CMD_IAP_BEGIN:
+            printf("start erase...\r\n");
             memcpy(&temp32, parse_uart->frame_s.frame_data, 4);
             iap_reset(&iap_s);
             crc = 0;
@@ -179,7 +180,7 @@ IAP_STATUS parse_iap_frame(PARSE_STRUCT *parse_uart)
             {
                 result = IAP_OK;
             }
-
+            printf("end erase...\r\n");
             break;
         case CMD_IAP_TRANS:
 
