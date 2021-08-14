@@ -6,7 +6,7 @@
 
 void uart_receive_struct_init(void);
 void receive_uart_data(uint8_t *receive_buffer,uint16_t receive_len);
-void uart_parse_loop(void);
+int uart_parse_loop(void);
 
 #endif
 

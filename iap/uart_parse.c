@@ -33,21 +33,22 @@ void recv_uart_farme(void *arg)
 uint8_t recv_buffer[1024];
 uint16_t recv_len = 0;
 
-void uart_parse_loop(void)
+int uart_parse_loop(void)
 {
-
+    int ret = -1;
     if(is_recv != 0)
     {
         
         if(parse_uart.frame_s.TargetID == LOCAL_ID)
         {
             parse_iap_frame(&parse_uart);
-             
+            ret = 0;
         }else{
 
         }   
         is_recv = 0;     
     }
+    return ret;
 }
 
 void uart_receive_struct_init(void)

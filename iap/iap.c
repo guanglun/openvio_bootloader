@@ -36,19 +36,27 @@ void boot(void)
 
     if(isReadUpgrade == 0)
     {
-        // while (jump_app_count--)
-        // {
-        //     uart_parse_loop();
-        //     usb_parse_loop();
-        //     HAL_Delay(1);
-        // }
-
-        printf("start jump to app ...\r\n");
-
-        if(!iap_jump_to(FLASH_APP_START_ADDRESS))
+        while (jump_app_count--)
         {
-            printf("jump fail, loop\r\n");
+            if(uart_parse_loop() == 0)
+                break;
+
+            if(usb_parse_loop() == 0)
+                break;
+                
+            HAL_Delay(1);
         }
+
+        if(jump_app_count <= 0)
+        {
+            printf("start jump to app ...\r\n");
+
+            if(!iap_jump_to(FLASH_APP_START_ADDRESS))
+            {
+                printf("jump fail, loop\r\n");
+            }
+        }
+
     }
 
     printf("loop...\r\n");

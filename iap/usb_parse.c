@@ -35,13 +35,15 @@ void recv_usb_farme(void *arg)
 uint8_t recv_usb_buffer[1024];
 uint16_t recv_usb_len = 0;
 
-void usb_parse_loop(void)
+int usb_parse_loop(void)
 {
+    int ret = -1;
     if(is_usb_recv != 0)
     {
         //usb_printf_frame(&parse_usb.frame_s);
         if(parse_usb.frame_s.TargetID == LOCAL_ID)
         {
+            ret = 0;
             parse_iap_frame(&parse_usb);
              
         }else{
@@ -49,6 +51,7 @@ void usb_parse_loop(void)
         }   
         is_usb_recv = 0;     
     }
+    return ret;
 }
 
 void usb_receive_struct_init(void)
