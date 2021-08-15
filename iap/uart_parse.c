@@ -4,9 +4,7 @@
 #include "protocol.h"
 #include "config.h"
 
-#define VERSION_1 0
-#define VERSION_2 0
-#define VERSION_3 1
+
 
 PARSE_STRUCT parse_uart;
 uint8_t is_recv = 0;

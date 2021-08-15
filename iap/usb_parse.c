@@ -4,10 +4,6 @@
 #include "protocol.h"
 #include "config.h"
 
-#define VERSION_1 0
-#define VERSION_2 0
-#define VERSION_3 1
-
 extern USBD_HandleTypeDef hUsbDeviceHS;
 
 PARSE_STRUCT parse_usb;

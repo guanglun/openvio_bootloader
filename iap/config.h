@@ -7,6 +7,10 @@ extern "C" {
 
 #include "main.h"
 
+#define VERSION_1 0
+#define VERSION_2 0
+#define VERSION_3 2
+
 #define JUMP_APP_DELAY  1000
 
 #define FLASH_BOOTLOADER_START_SECTOR           FLASH_SECTOR_0

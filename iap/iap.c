@@ -10,23 +10,22 @@ extern struct EEPROM_CONFIG_STRUCT eeprom;
 int isReadUpgrade = 0;
 int jump_app_count = JUMP_APP_DELAY;
 
-#define VERSION1 0
-#define VERSION2 0
-#define VERSION3 1
-
 void boot(void)
 {
+    int cnt_1s = 0;
+
     uart_recv_start();
+
     uart_receive_struct_init();
 
     usb_receive_struct_init();
 
     flash_eeprom_load();
-    
-    if(eeprom.reboot_to_bootloader == 1 || 
-    HAL_GPIO_ReadPin(KEY_GPIO_Port,KEY_Pin) == GPIO_PIN_RESET)
+
+    if (eeprom.reboot_to_bootloader == 1 ||
+        HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin) == GPIO_PIN_RESET)
     {
-        if(eeprom.reboot_to_bootloader == 1)
+        if (eeprom.reboot_to_bootloader == 1)
         {
             eeprom.reboot_to_bootloader = 0;
             flash_eeprom_save();
@@ -34,36 +33,49 @@ void boot(void)
         isReadUpgrade = 1;
     }
 
-    if(isReadUpgrade == 0)
+    if (isReadUpgrade == 0)
     {
         while (jump_app_count--)
         {
-            if(uart_parse_loop() == 0)
+            cnt_1s++;
+            if (cnt_1s >= 100)
+            {
+                HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin);
+                cnt_1s = 0;
+            }
+
+            if (uart_parse_loop() == 0)
                 break;
 
-            if(usb_parse_loop() == 0)
+            if (usb_parse_loop() == 0)
                 break;
-                
             HAL_Delay(1);
         }
 
-        if(jump_app_count <= 0)
+        if (jump_app_count <= 0)
         {
             printf("start jump to app ...\r\n");
 
-            if(!iap_jump_to(FLASH_APP_START_ADDRESS))
+            if (!iap_jump_to(FLASH_APP_START_ADDRESS))
             {
                 printf("jump fail, loop\r\n");
             }
         }
-
     }
 
     printf("loop...\r\n");
-    while(1)
+    while (1)
     {
+        cnt_1s++;
+        if (cnt_1s >= 1000)
+        {
+            HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
+            cnt_1s = 0;
+        }
+
         uart_parse_loop();
         usb_parse_loop();
+        HAL_Delay(1);
     }
 }
 
@@ -73,50 +85,50 @@ void boot(void)
 //IN
 #define REQUEST_GET_VERSION 0x00
 
-
 extern struct EEPROM_CONFIG_STRUCT eeprom;
 
 int usb_recv(uint8_t cmd, uint8_t *pbuf, uint16_t length)
 {
-	int ret = 0;
-	switch (cmd)
-	{
-	case REQUEST_SET_REBOOT:
-		if(pbuf[0] == 0)
-		{
-			eeprom.reboot_to_bootloader = 1;
+    int ret = 0;
+    switch (cmd)
+    {
+    case REQUEST_SET_REBOOT:
+        if (pbuf[0] == 0)
+        {
+            eeprom.reboot_to_bootloader = 1;
             flash_eeprom_save();
             __set_FAULTMASK(1);
             NVIC_SystemReset();
-		}else if(pbuf[0] == 1)
-		{
+        }
+        else if (pbuf[0] == 1)
+        {
             __set_FAULTMASK(1);
             NVIC_SystemReset();
-		}
-		break;
-	default:
-		ret = -1;
-		break;
-	}
-	return ret;
+        }
+        break;
+    default:
+        ret = -1;
+        break;
+    }
+    return ret;
 }
 
 int usb_ctrl(uint8_t cmd, uint8_t *pbuf)
 {
-	int ret = 0;
-	switch (cmd)
-	{
-	case REQUEST_GET_VERSION:
-		pbuf[0] = VERSION1;
-		pbuf[1] = VERSION2;
-		pbuf[2] = VERSION3;
-		ret = 3;
-		break;
-	default:
-		ret = -1;
-		break;
-	}
-	return ret;
+    int ret = 0;
+    switch (cmd)
+    {
+    case REQUEST_GET_VERSION:
+        pbuf[0] = VERSION_1;
+        pbuf[1] = VERSION_2;
+        pbuf[2] = VERSION_3;
+        ret = 3;
+        break;
+    default:
+        ret = -1;
+        break;
+    }
+    return ret;
 }
 
 struct IAP_STRUCT
@@ -176,7 +188,7 @@ IAP_STATUS parse_iap_frame(PARSE_STRUCT *parse_uart)
         {
         case CMD_GET_VERSION:
             result = IAP_OK;
-            break;             
+            break;
         case CMD_IAP_BEGIN:
             printf("start erase...\r\n");
             memcpy(&temp32, parse_uart->frame_s.frame_data, 4);
@@ -217,13 +229,14 @@ IAP_STATUS parse_iap_frame(PARSE_STRUCT *parse_uart)
                 if (flash_write(FLASH_APP_START_ADDRESS + iap_s.write_pos, (uint8_t *)parse_uart->frame_s.frame_data, parse_uart->frame_s.FrameDataLen) != FLASH_OK)
                 {
                     result = IAPERROR_WRITEFLASH;
-                }else
+                }
+                else
                 {
 
                     iap_s.index++;
                     iap_s.write_pos += parse_uart->frame_s.FrameDataLen;
 
-                    for(int i=0;i<parse_uart->frame_s.FrameDataLen;i++)
+                    for (int i = 0; i < parse_uart->frame_s.FrameDataLen; i++)
                     {
                         crc += parse_uart->frame_s.frame_data[i];
                     }
@@ -231,7 +244,6 @@ IAP_STATUS parse_iap_frame(PARSE_STRUCT *parse_uart)
                     crc = ~crc;
                     result = IAP_OK;
                 }
-
             }
             else
             {
@@ -239,23 +251,24 @@ IAP_STATUS parse_iap_frame(PARSE_STRUCT *parse_uart)
             }
             break;
         case CMD_IAP_VERIFY:
-            if(parse_uart->frame_s.FrameDataLen == 4)
+            if (parse_uart->frame_s.FrameDataLen == 4)
             {
                 memcpy(&temp32, parse_uart->frame_s.frame_data, 4);
                 //printf("%02X %02X\r\n",crc,temp32);
 
-                if( *(((uint8_t *)&crc) + 0) == parse_uart->frame_s.frame_data[0] &&
+                if (*(((uint8_t *)&crc) + 0) == parse_uart->frame_s.frame_data[0] &&
                     *(((uint8_t *)&crc) + 1) == parse_uart->frame_s.frame_data[1] &&
                     *(((uint8_t *)&crc) + 2) == parse_uart->frame_s.frame_data[2] &&
-                    *(((uint8_t *)&crc) + 3) == parse_uart->frame_s.frame_data[3]
-                )
+                    *(((uint8_t *)&crc) + 3) == parse_uart->frame_s.frame_data[3])
                 {
                     result = IAP_OK;
                 }
-            }else{
+            }
+            else
+            {
                 result = IAPERROR_CRC;
             }
-            
+
             break;
         case CMD_IAP_RESET:
             printf("reboot...\r\n");
@@ -284,8 +297,8 @@ IAP_STATUS parse_iap_frame(PARSE_STRUCT *parse_uart)
 static void system_jump_to(uint32_t ApplicationAddress)
 {
     uint32_t JumpAddress;
-    __disable_irq();  
-    
+    __disable_irq();
+
     JumpAddress = *(uint32_t *)(ApplicationAddress + 4);
     /* Initialize user application's Stack Pointer */
     __set_MSP(*(uint32_t *)ApplicationAddress);
@@ -298,7 +311,7 @@ int iap_jump_to(uint32_t address)
     if (((*(uint32_t *)address) & 0x20000000) == 0x20000000 && (*(uint32_t *)address) != 0xFFFFFFFF)
     {
         printf("jump check ok ...\r\n");
-        __HAL_UART_DISABLE_IT(&huart2, UART_IT_IDLE); 
+        __HAL_UART_DISABLE_IT(&huart2, UART_IT_IDLE);
         HAL_UART_MspDeInit(&huart2);
 
         USBD_DeInit(&hUsbDeviceHS);
